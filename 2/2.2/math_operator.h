@@ -6,7 +6,7 @@ double add (double arg1, double arg2);
 double subtract (double arg1, double arg2);
 double multiply (double arg1, double arg2);
 double divide (double arg1, double arg2);
-double Exponentiation (double arg1, double exp);
+double exponentiation (double arg1, double exp);
 double sqrt (double arg);
 double mod (double arg1, double arg2);
 

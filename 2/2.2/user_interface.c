@@ -15,7 +15,7 @@ void userScreen()
         printf("4. Деление (divide)\n");
         printf("5. Возведение в степень (Exponentiation)\n");
         printf("6. Квадратный корень (sqrt)\n");
-        printf("7. Остаток от деления (mod)\n");
+        //printf("7. Остаток от деления (mod)\n");
         printf("0. Выход\n");
         printf("Выберите операцию: ");
 
@@ -37,7 +37,7 @@ void userScreen()
                 scanf("%lf", &arg2);
                 result = add(arg1, arg2);
                 printf("Результат: %lf\n", result);
-                break;
+                
 
             case 2:
                 printf("Введите первый аргумент: ");
@@ -46,7 +46,7 @@ void userScreen()
                 scanf("%lf", &arg2);
                 result = subtract(arg1, arg2);
                 printf("Результат: %lf\n", result);
-                break;
+                
 
             case 3:
                 printf("Введите первый аргумент: ");
@@ -55,7 +55,7 @@ void userScreen()
                 scanf("%lf", &arg2);
                 result = multiply(arg1, arg2);
                 printf("Результат: %lf\n", result);
-                break;
+                
 
             case 4:
                 printf("Введите первый аргумент: ");
@@ -68,22 +68,20 @@ void userScreen()
                 } else {
                     printf("Результат: %lf\n", result);
                 }
-                break;
+                
 
             case 5:
-                printf("Введите первый аргумент: ");
+                printf("Введите аргумент: ");
                 scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
+                printf("Введите степень: ");
                 scanf("%lf", &arg2);
-                result = Exponentiation(arg1, arg2);
+                result = exponentiation(arg1, arg2);
                 printf("Результат: %lf\n", result);
-                break;
+                
 
             case 6:
                 printf("Введите первый аргумент: ");
                 scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
-                scanf("%lf", &arg2);
                 result = sqrt(arg1);
                 /* Проверка на NaN без использования math.h (NaN != NaN) */
                 if (result != result) {
@@ -91,7 +89,7 @@ void userScreen()
                 } else {
                     printf("Результат: %lf\n", result);
                 }
-                break;
+                
 
             /*case 7:
                 printf("Введите два числа: ");
@@ -108,6 +106,7 @@ void userScreen()
                 printf("Неверный пункт меню. Попробуйте снова.\n");
                 break;
         }
+        printf ("\nДля продолжения нажмите любую клавишу ");
     }
 
 }
