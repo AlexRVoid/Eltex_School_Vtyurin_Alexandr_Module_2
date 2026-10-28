@@ -11,4 +11,4 @@ double sqrt (double arg);
 double mod (double arg1, double arg2);
 
 
-#endif MATH_OPERATOR_H_
+#endif /* MATH_OPERATOR_H_ */

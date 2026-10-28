@@ -71,7 +71,7 @@ void userScreen()
                 break;
 
             case 5:
-                pprintf("Введите первый аргумент: ");
+                printf("Введите первый аргумент: ");
                 scanf("%lf", &arg1);
                 printf("Введите второй аргумент аргумент: ");
                 scanf("%lf", &arg2);
