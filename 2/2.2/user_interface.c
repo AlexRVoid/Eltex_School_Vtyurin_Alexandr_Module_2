@@ -37,7 +37,7 @@ void userScreen()
                 scanf("%lf", &arg2);
                 result = add(arg1, arg2);
                 printf("Результат: %lf\n", result);
-                
+                break;
 
             case 2:
                 printf("Введите первый аргумент: ");
@@ -46,7 +46,7 @@ void userScreen()
                 scanf("%lf", &arg2);
                 result = subtract(arg1, arg2);
                 printf("Результат: %lf\n", result);
-                
+                break;
 
             case 3:
                 printf("Введите первый аргумент: ");
@@ -55,7 +55,7 @@ void userScreen()
                 scanf("%lf", &arg2);
                 result = multiply(arg1, arg2);
                 printf("Результат: %lf\n", result);
-                
+                break;
 
             case 4:
                 printf("Введите первый аргумент: ");
@@ -68,7 +68,7 @@ void userScreen()
                 } else {
                     printf("Результат: %lf\n", result);
                 }
-                
+                break;
 
             case 5:
                 printf("Введите аргумент: ");
@@ -77,7 +77,7 @@ void userScreen()
                 scanf("%lf", &arg2);
                 result = exponentiation(arg1, arg2);
                 printf("Результат: %lf\n", result);
-                
+                break;
 
             case 6:
                 printf("Введите первый аргумент: ");
@@ -89,7 +89,7 @@ void userScreen()
                 } else {
                     printf("Результат: %lf\n", result);
                 }
-                
+                break;
 
             /*case 7:
                 printf("Введите два числа: ");
@@ -106,7 +106,7 @@ void userScreen()
                 printf("Неверный пункт меню. Попробуйте снова.\n");
                 break;
         }
-        printf ("\nДля продолжения нажмите любую клавишу ");
+        
     }
 
 }
