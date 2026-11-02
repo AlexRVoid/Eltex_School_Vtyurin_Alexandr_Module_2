@@ -75,15 +75,13 @@ void userScreen()
                 scanf("%lf", &arg1);
                 printf("Введите второй аргумент аргумент: ");
                 scanf("%lf", &arg2);
-                result = Exponentiation(arg1, arg2);
+                result = exponentiation(arg1, arg2);
                 printf("Результат: %lf\n", result);
                 break;
 
             case 6:
                 printf("Введите первый аргумент: ");
                 scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
-                scanf("%lf", &arg2);
                 result = sqrt(arg1);
                 /* Проверка на NaN без использования math.h (NaN != NaN) */
                 if (result != result) {
