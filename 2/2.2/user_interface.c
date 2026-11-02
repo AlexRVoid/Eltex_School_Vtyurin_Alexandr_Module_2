@@ -33,7 +33,7 @@ void userScreen()
             case 1:
                 printf("Введите первый аргумент: ");
                 scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
+                printf("Введите второй аргумент: ");
                 scanf("%lf", &arg2);
                 result = add(arg1, arg2);
                 printf("Результат: %lf\n", result);
@@ -42,7 +42,7 @@ void userScreen()
             case 2:
                 printf("Введите первый аргумент: ");
                 scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
+                printf("Введите второй аргумент: ");
                 scanf("%lf", &arg2);
                 result = subtract(arg1, arg2);
                 printf("Результат: %lf\n", result);
@@ -51,7 +51,7 @@ void userScreen()
             case 3:
                 printf("Введите первый аргумент: ");
                 scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
+                printf("Введите второй аргумент: ");
                 scanf("%lf", &arg2);
                 result = multiply(arg1, arg2);
                 printf("Результат: %lf\n", result);
@@ -60,7 +60,7 @@ void userScreen()
             case 4:
                 printf("Введите первый аргумент: ");
                 scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
+                printf("Введите второй аргумент: ");
                 scanf("%lf", &arg2);
                 result = divide(arg1, arg2);
                 if (result != result) {

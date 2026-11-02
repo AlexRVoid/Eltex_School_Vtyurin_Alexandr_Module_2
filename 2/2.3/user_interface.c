@@ -1,112 +1,70 @@
 #include "user_interface.h"
+#include "math_operator.h"
 
 void userScreen()
 {
     printf ("Добро пожаловать в программу калькулятор\n");
+    
+    MathOperation operations[] = { //Массив с мат операциями
+        {"Сложение (add)",                   2, add,            NULL},
+        {"Вычитание (subtract)",             2, subtract,       NULL},
+        {"Умножение (multiply)",             2, multiply,       NULL},
+        {"Деление (divide)",                 2, divide,         NULL},
+        {"Возведение в степень (exponent)", 2, exponentiation, NULL},
+        {"Квадратный корень (sqrt)",         1, NULL,           sqrt}
+    };
+
+    int total_ops = sizeof(operations) / sizeof(operations[0]); //Размер массива(колличество достуапных операций операций)
     int choice;
     double arg1, arg2, result;
 
     while (1) {
         printf("\n=== Меню калькулятора ===\n");
-        printf("1. Сложение (add)\n");
-        printf("2. Вычитание (subtract)\n");
-        printf("3. Умножение (multiply)\n");
-        printf("4. Деление (divide)\n");
-        printf("5. Возведение в степень (Exponentiation)\n");
-        printf("6. Квадратный корень (sqrt)\n");
-        printf("7. Остаток от деления (mod)\n");
+        
+        for (int i = 0; i < total_ops; i++) {
+            printf("%d. %s\n", i + 1, operations[i].name);
+        }
         printf("0. Выход\n");
         printf("Выберите операцию: ");
-
-        if (scanf("%d", &choice) != 1) {
+        
+        if (scanf("%d", &choice) != 1) { //Проверка что было только 1 считывание пользовательского ввода
             printf("Ошибка ввода! Завершение работы.\n");
             break;
         }
 
-        if (choice == 0) {
-            printf("Выход из программы.\n");
+        if (choice == 0) { //Выход из программы
+            printf("Выход из программы. До свидания!\n");
             break;
         }
 
-        switch (choice) {
-            case 1:
-                printf("Введите первый аргумент: ");
-                scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
-                scanf("%lf", &arg2);
-                result = add(arg1, arg2);
-                printf("Результат: %lf\n", result);
-                break;
-
-            case 2:
-                printf("Введите первый аргумент: ");
-                scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
-                scanf("%lf", &arg2);
-                result = subtract(arg1, arg2);
-                printf("Результат: %lf\n", result);
-                break;
-
-            case 3:
-                printf("Введите первый аргумент: ");
-                scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
-                scanf("%lf", &arg2);
-                result = multiply(arg1, arg2);
-                printf("Результат: %lf\n", result);
-                break;
-
-            case 4:
-                printf("Введите первый аргумент: ");
-                scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
-                scanf("%lf", &arg2);
-                result = divide(arg1, arg2);
-                if (result != result) {
-                   printf("Ошибка: деление на ноль!\n");
-                } else {
-                    printf("Результат: %lf\n", result);
-                }
-                break;
-
-            case 5:
-                pprintf("Введите первый аргумент: ");
-                scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
-                scanf("%lf", &arg2);
-                result = Exponentiation(arg1, arg2);
-                printf("Результат: %lf\n", result);
-                break;
-
-            case 6:
-                printf("Введите первый аргумент: ");
-                scanf("%lf", &arg1);
-                printf("Введите второй аргумент аргумент: ");
-                scanf("%lf", &arg2);
-                result = sqrt(arg1);
-                /* Проверка на NaN без использования math.h (NaN != NaN) */
-                if (result != result) {
-                    printf("Ошибка: корень из отрицательного числа!\n");
-                } else {
-                    printf("Результат: %lf\n", result);
-                }
-                break;
-
-            /*case 7:
-                printf("Введите два числа: ");
-                scanf("%lf %lf", &arg1, &arg2);
-                if (arg2 == 0.0) {
-                    printf("Ошибка: деление на ноль!\n");
-                } else {
-                    result = mod(arg1, arg2);
-                    printf("Результат: %lf\n", result);
-                }
-                break;*/
-
-            default:
-                printf("Неверный пункт меню. Попробуйте снова.\n");
-                break;
+        if (choice < 1 || choice > total_ops) { //Проверка на валидность ввода от пользователя
+            printf("Неверный номер команды! Попробуйте снова.\n");
+            continue;
         }
-    }
 
+        if (operations[choice - 1].args_count == 1) {
+            printf("Введите аргумент: ");
+            scanf("%lf", &arg1);
+
+            /* Вызов унарной функции через указатель */
+            result = operations[choice - 1].un_op(arg1);
+        } else {
+            printf("Введите первый аргумент: ");
+            scanf("%lf", &arg1);
+            printf("Введите второй аргумент: ");
+            scanf("%lf", &arg2);
+
+            /* Вызов бинарной функции через указатель */
+            result = operations[choice - 1].bin_op(arg1, arg2);
+        }
+
+        /* Проверка на ошибку вычисления (NaN != NaN) */
+        if (result != result) {
+            printf("Ошибка: недопустимая математическая операция (деление на ноль или корень из отрицательного числа)!\n");
+        } else {
+            printf("Результат: %lf\n", result);
+        }
+        
+    }
+        
 }

@@ -27,10 +27,20 @@ double exponentiation (double arg1, double exp)
         return 0;
     }
     double expResult = arg1;
-    for (int i = 1; i <= exp; i++){
-        expResult *= arg1;
+
+    if (exp > 0)
+    {
+        for (int i = 1; i < exp; i++){
+            expResult *= arg1;
+        }
+        return expResult;
+    }else{
+        for (int i = -1; i > exp; i--){
+            expResult *= arg1;
+        }
+        return 1 / expResult;
     }
-    return expResult;
+
 }
 
 double sqrt (double arg)
