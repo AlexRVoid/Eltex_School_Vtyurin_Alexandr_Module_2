@@ -15,13 +15,13 @@ static int contact_compare(const FullName *a, const FullName *b)
     return strcmp(a->secondName, b->secondName);
 }
 
-/* Вставка узла в двухсвязный список с сохранением порядка (Лекция 4, слайды 116, 124-126) */
+/* Вставка узла в двухсвязный список с сохранением порядка */
 static void list_insert_sorted(Contact **head, Contact *new_node)
 {
     new_node->prev = NULL;
     new_node->next = NULL;
 
-    /* Случай 1: Список пуст (Лекция 4, слайд 122, 125) */
+    /* Случай 1: Список пуст  */
     if (*head == NULL) {
         *head = new_node;
         return;
@@ -35,13 +35,13 @@ static void list_insert_sorted(Contact **head, Contact *new_node)
         return;
     }
 
-    /* Случай 3: Поиск места вставки в середине или конце списка (Лекция 4, слайд 117, 126) */
+    /* Случай 3: Поиск места вставки в середине или конце списка */
     Contact *curr = *head;
     while (curr->next != NULL && contact_compare(&new_node->name, &curr->next->name) >= 0) {
         curr = curr->next;
     }
 
-    /* Встраивание new_node после curr (Лекция 4, слайды 115, 124) */
+    /* Встраивание new_node после curr*/
     new_node->next = curr->next;
     new_node->prev = curr;
 
@@ -51,7 +51,7 @@ static void list_insert_sorted(Contact **head, Contact *new_node)
     curr->next = new_node;
 }
 
-/* Извлечение узла из связей списка без освобождения памяти (Лекция 4, слайды 119, 128) */
+/* Извлечение узла из связей списка без освобождения памяти */
 static void list_detach_node(Contact **head, Contact *node)
 {
     if (node->prev != NULL) {
@@ -68,7 +68,7 @@ static void list_detach_node(Contact **head, Contact *node)
     node->next = NULL;
 }
 
-/* Поиск контакта по ID перебором списка (Лекция 4, слайд 111) */
+/* Поиск контакта по ID перебором списка */
 static Contact* find_internal(Contact *head, int id)
 {
     for (Contact *curr = head; curr != NULL; curr = curr->next) {
@@ -85,7 +85,7 @@ int contact_add(Contact **head, size_t *count, int *next_id,
     if (!head || !count || !next_id || !person) return -1;
     if (person->lastName[0] == '\0' || person->firstName[0] == '\0') return -1;
 
-    /* Выделение памяти под один новый узел списка (Лекция 4, слайд 108, 125) */
+    /* Выделение памяти под один новый узел списка  */
     Contact *new_contact = (Contact *)malloc(sizeof(Contact));
     if (!new_contact) {
         return -1;
@@ -152,10 +152,10 @@ int contact_delete(Contact **head, size_t *count, int id)
     Contact *target = find_internal(*head, id);
     if (!target) return -1;
 
-    /* Исключаем узел из связей списка (Лекция 4, слайд 128-130) */
+    /* Исключаем узел из связей списка  */
     list_detach_node(head, target);
 
-    /* Освобождаем память удаленного узла (Лекция 4, слайд 110, 130) */
+    /* Освобождаем память удаленного узла  */
     free(target);
 
     if (count && *count > 0) {
@@ -265,7 +265,7 @@ void contact_free_all(Contact **head, size_t *count)
 {
     if (!head || !(*head)) return;
 
-    /* Поузловое освобождение памяти списка (Лекция 4, слайд 111, 131) */
+    /* Поузловое освобождение памяти списка */
     Contact *curr = *head;
     while (curr != NULL) {
         Contact *next = curr->next;

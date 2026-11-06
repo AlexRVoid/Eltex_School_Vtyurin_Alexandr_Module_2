@@ -362,7 +362,7 @@ int contact_remove_address(Contact *root, int id, size_t addr_idx)
     return 0;
 }
 
-/* ---------- Канонические обходы дерева (Лекция 4) ---------- */
+/* ---------- Канонические обходы дерева ---------- */
 
 static void do_traverse(const Contact *n, TreeOrder order, void (*cb)(const Contact *))
 {
