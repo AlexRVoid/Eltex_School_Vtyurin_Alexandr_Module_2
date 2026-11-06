@@ -7,10 +7,10 @@ uint32_t cidr_to_mask(int cidr)
 {
     if (cidr <= 0) return 0x00000000U;
     if (cidr >= 32) return 0xFFFFFFFFU;
-    /* 
+    // 
      * Сдвиг единицы на (32 - cidr) разрядов влево, вычитание 1 (дает инвертированные биты хоста)
      * и побитовое отрицание '~' формирует непрерывную цепочку единиц (Лекция 3, слайд 143, 151)
-     */
+     
     return ~((1U << (32 - cidr)) - 1U);
 }
 
@@ -28,7 +28,7 @@ static int is_valid_mask(uint32_t mask)
 {
     if (mask == 0) return 1;
     uint32_t inverted = ~mask;
-    /* У правильной маски инвертированные биты хоста имеют вид 00...0011...11 */
+    // У правильной маски инвертированные биты хоста имеют вид 00...0011...11 
     return ((inverted + 1U) & inverted) == 0;
 }
 
@@ -46,7 +46,7 @@ int parse_ip(const char *str, uint32_t *out_ip)
         return -1;
     }
 
-    /* Упаковка 4 октетов в один uint32_t через сдвиги и побитовое ИЛИ (Лекция 3, слайды 144, 148) */
+    // Упаковка 4 октетов в один uint32_t через сдвиги и побитовое ИЛИ (Лекция 3, слайды 144, 148) 
     *out_ip = ((uint32_t)a << 24) |
               ((uint32_t)b << 16) |
               ((uint32_t)c << 8)  |
@@ -58,7 +58,7 @@ int parse_mask(const char *str, uint32_t *out_mask, int *out_cidr)
 {
     if (!str || !out_mask || !out_cidr) return -1;
 
-    /* Вариант 1: Формат CIDR с префиксом '/' (например, "/24") или просто число ("24") */
+    // Вариант 1: Формат CIDR с префиксом '/' (например, "/24") или просто число ("24") 
     const char *p = str;
     if (*p == '/') p++;
 
@@ -71,11 +71,11 @@ int parse_mask(const char *str, uint32_t *out_mask, int *out_cidr)
         return 0;
     }
 
-    /* Вариант 2: Формат "255.255.255.0" */
+    // Вариант 2: Формат "255.255.255.0" 
     uint32_t raw_mask;
     if (parse_ip(str, &raw_mask) == 0) {
         if (!is_valid_mask(raw_mask)) {
-            return -1; /* Невалидная маска (например, разрыв между единицами) */
+            return -1; // Невалидная маска (например, разрыв между единицами) 
         }
         *out_mask = raw_mask;
         *out_cidr = mask_to_cidr(raw_mask);
@@ -87,12 +87,12 @@ int parse_mask(const char *str, uint32_t *out_mask, int *out_cidr)
 
 int is_same_subnet(uint32_t gateway_ip, uint32_t target_ip, uint32_t mask)
 {
-    /* 
+    // 
      * Алгоритм из Лекции 3, слайды 155-157:
      * 1. Адрес своей сети: gateway_ip & mask
      * 2. Адрес сети назначения: target_ip & mask
      * 3. Сравнение: (Net_Src ^ Net_Dst) == 0 (слайд 157)
-     */
+     
     uint32_t net_src = gateway_ip & mask;
     uint32_t net_dst = target_ip & mask;
     uint32_t result = net_src ^ net_dst;
@@ -102,10 +102,10 @@ int is_same_subnet(uint32_t gateway_ip, uint32_t target_ip, uint32_t mask)
 
 uint32_t generate_random_ip(void)
 {
-    /* 
+    // 
      * rand() возвращает значение до RAND_MAX (минимум 15-31 бит).
      * Собираем полное 32-битное число сдвигами и исключающим ИЛИ:
-     */
+     
     uint32_t r1 = (uint32_t)rand();
     uint32_t r2 = (uint32_t)rand();
     return (r1 << 16) ^ r2;
@@ -136,10 +136,10 @@ int run_simulation(uint32_t gateway_ip, uint32_t mask, int cidr, size_t n, Simul
     stats->same_net_percent = ((double)stats->same_net_count / (double)n) * 100.0;
     stats->other_net_percent = ((double)stats->other_net_count / (double)n) * 100.0;
 
-    /* 
+    // 
      * Теоретическая вероятность: (2^(32 - cidr)) / (2^32) = 1 / (2^cidr)
      * В процентах: 100.0 / (2^cidr)
-     */
+     
     double denom = 1.0;
     for (int i = 0; i < cidr; i++) {
         denom *= 2.0;

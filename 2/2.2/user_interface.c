@@ -83,7 +83,7 @@ void userScreen()
                 printf("Введите первый аргумент: ");
                 scanf("%lf", &arg1);
                 result = sqrt(arg1);
-                /* Проверка на NaN без использования math.h (NaN != NaN) */
+                // Проверка на NaN без использования math.h (NaN != NaN) 
                 if (result != result) {
                     printf("Ошибка: корень из отрицательного числа!\n");
                 } else {
@@ -91,7 +91,7 @@ void userScreen()
                 }
                 break;
 
-            /*case 7:
+            //case 7:
                 printf("Введите два числа: ");
                 scanf("%lf %lf", &arg1, &arg2);
                 if (arg2 == 0.0) {
@@ -100,7 +100,7 @@ void userScreen()
                     result = mod(arg1, arg2);
                     printf("Результат: %lf\n", result);
                 }
-                break;*/
+                break;
 
             default:
                 printf("Неверный пункт меню. Попробуйте снова.\n");

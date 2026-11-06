@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-/* Внутренний поиск для редактирования */
+// Внутренний поиск для редактирования 
 static Contact* find_internal(Contact *list, size_t count, int id)
 {
     if (!list) return NULL;
@@ -96,7 +96,7 @@ int contact_delete(Contact **list, size_t *count, int id)
 
     if (target_idx == *count) return -1;
 
-    /* Сдвиг элементов влево */
+    // Сдвиг элементов влево 
     for (size_t i = target_idx; i < *count - 1; i++) {
         (*list)[i] = (*list)[i + 1];
     }

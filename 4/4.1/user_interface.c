@@ -122,7 +122,7 @@ static void ui_add_contact(Contact **head, size_t *count, int *next_id)
     }
 }
 
-/* Вывод всех контактов проходом по списку через указатель next */
+// Вывод всех контактов проходом по списку через указатель next 
 static void ui_view_all(const Contact *head, size_t count)
 {
     if (!head || count == 0) {
@@ -309,7 +309,7 @@ static void ui_edit(Contact **head)
 
 void run_phonebook_ui(void)
 {
-    Contact *head = NULL; /* Голова двухсвязного списка */
+    Contact *head = NULL; // Голова двухсвязного списка 
     size_t count = 0;
     int next_id = 1;
 

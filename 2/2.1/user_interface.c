@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* Безопасное чтение строки фиксированного размера с удалением '\n' */
+// Безопасное чтение строки фиксированного размера с удалением '\n' 
 static void read_line(char *dest, size_t max_len)
 {
     if (fgets(dest, (int)max_len, stdin) != NULL) {
@@ -16,7 +16,7 @@ static void read_line(char *dest, size_t max_len)
     }
 }
 
-/* Вывод карточки одного контакта в терминал */
+// Вывод карточки одного контакта в терминал 
 static void print_contact_card(const Contact *c)
 {
     if (!c) return;
@@ -48,7 +48,7 @@ static void print_contact_card(const Contact *c)
     printf("==================================================\n");
 }
 
-/* Пункт меню: Добавление нового контакта */
+// Пункт меню: Добавление нового контакта 
 static void ui_add_contact(Contact **list, size_t *count, int *next_id)
 {
     FullName person;
@@ -59,7 +59,7 @@ static void ui_add_contact(Contact **list, size_t *count, int *next_id)
 
     printf("\n--- Создание нового контакта ---\n");
 
-    /* Обязательные поля */
+    // Обязательные поля 
     printf("Фамилия (обязательно): ");
     read_line(person.lastName, MAX_NAME_LEN);
     if (person.lastName[0] == '\0') {
@@ -74,7 +74,7 @@ static void ui_add_contact(Contact **list, size_t *count, int *next_id)
         return;
     }
 
-    /* Опциональные поля */
+    // Опциональные поля 
     printf("Отчество (Enter, если нет): ");
     read_line(person.secondName, MAX_NAME_LEN);
 
@@ -101,14 +101,14 @@ static void ui_add_contact(Contact **list, size_t *count, int *next_id)
         has_address = 1;
     }
 
-    /* 
+    // 
      * Динамическое формирование вызова contact_add с необязательными параметрами:
      * Обязательные: lastName, firstName.
      * Необязательные спецификаторы:
      *   '%s' — отчество
      *   '%p' — телефон  (const char*)
      *   '%a' — адрес    (const Address*)
-     */
+     
     int new_id = -1;
 
     if (person.secondName[0] != '\0' && phone[0] != '\0' && has_address) {
@@ -143,7 +143,7 @@ static void ui_add_contact(Contact **list, size_t *count, int *next_id)
     }
 }
 
-/* Пункт меню: Просмотр всех контактов */
+// Пункт меню: Просмотр всех контактов 
 static void ui_view_all(const Contact *list, size_t count)
 {
     if (!list || count == 0) {
@@ -157,7 +157,7 @@ static void ui_view_all(const Contact *list, size_t count)
     }
 }
 
-/* Пункт меню: Поиск по уникальному ID */
+// Пункт меню: Поиск по уникальному ID 
 static void ui_find_by_id(const Contact *list, size_t count)
 {
     char buf[32];
@@ -170,7 +170,7 @@ static void ui_find_by_id(const Contact *list, size_t count)
         return;
     }
 
-    /* contact_find_by_id возвращает const Contact*, поле id нельзя переписать */
+    // contact_find_by_id возвращает const Contact*, поле id нельзя переписать 
     const Contact *c = contact_find_by_id(list, count, id);
     if (c) {
         print_contact_card(c);
@@ -179,7 +179,7 @@ static void ui_find_by_id(const Contact *list, size_t count)
     }
 }
 
-/* Пункт меню: Удаление контакта */
+// Пункт меню: Удаление контакта 
 static void ui_delete(Contact **list, size_t *count)
 {
     char buf[32];
@@ -199,7 +199,7 @@ static void ui_delete(Contact **list, size_t *count)
     }
 }
 
-/* Пункт меню: Редактирование контакта */
+// Пункт меню: Редактирование контакта 
 static void ui_edit(Contact *list, size_t count)
 {
     char buf[32];
@@ -242,7 +242,7 @@ static void ui_edit(Contact *list, size_t count)
             printf("Новое отчество (Enter, чтобы оставить '%s'): ", c->name.secondName);
             read_line(upConName.secondName, MAX_NAME_LEN);
 
-            /*'%l' - фамилия, '%f' - имя, '%s' - отчество */
+            //'%l' - фамилия, '%f' - имя, '%s' - отчество 
             char format[8] = "";
             if (upConName.lastName[0] != '\0')   strcat(format, "%l");
             if (upConName.firstName[0] != '\0')  strcat(format, "%f");
@@ -386,6 +386,6 @@ void run_phonebook_ui(void)
         }
     }
 
-    /* Освобождение памяти массива при выходе */
+    // Освобождение памяти массива при выходе 
     contact_free_all(&contacts, &count);
 }
