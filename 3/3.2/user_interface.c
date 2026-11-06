@@ -9,7 +9,7 @@
 static void print_ip_binary(uint32_t val)
 {
     for (int i = 31; i >= 0; i--) {
-        /* Проверка i-го бита (Лекция 3, слайд 152) */
+        /* Проверка i-го бита*/
         printf("%c", (val & (1U << i)) ? '1' : '0');
         if (i % 8 == 0 && i != 0) {
             printf("."); /* Разделитель октетов */
@@ -40,7 +40,7 @@ static void read_string(char *buf, size_t size)
     }
 }
 
-void run_ipv4_simulator_ui(void)
+void run_ipv4_simulator_ui()
 {
     char ip_str[64];
     char mask_str[64];
@@ -54,7 +54,7 @@ void run_ipv4_simulator_ui(void)
     srand((unsigned int)time(NULL));
 
     printf("========================================================\n");
-    printf("   ИМИТАТОР ПРИНЯТИЯ РЕШЕНИЙ IPV4-МАРШРУТИЗАЦИИ (3.2)   \n");
+    printf("   ИМИТАТОР ПРИНЯТИЯ РЕШЕНИЙ IPV4-МАРШРУТИЗАЦИИ    \n");
     printf("========================================================\n");
 
     /* Ввод IP шлюза */
@@ -120,10 +120,4 @@ void run_ipv4_simulator_ui(void)
            stats.cidr_prefix == 0 ? 0xFFFFFFFFU : (1U << (32 - stats.cidr_prefix)));
     printf("Теоретическая вероятность случайного попадания: %.8f %%\n",
            stats.theoretical_percent);
-
-    if (stats.cidr_prefix >= 20 && stats.total_packets < 100000) {
-        printf("\nПримечание: для узких подсетей (например, /24 вероятность всего ~0.000006%%),\n"
-               "поэтому при небольшом числе N случайных пакетов попаданий может быть 0.\n"
-               "Для демонстрации частых попаданий протестируйте маски /8 или /16!\n");
-    }
 }

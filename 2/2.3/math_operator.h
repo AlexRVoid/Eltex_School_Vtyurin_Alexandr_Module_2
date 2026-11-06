@@ -15,10 +15,10 @@ typedef double (*UnaryFunc)(double);
 
 /* Структура для хранения информации об операции */
 typedef struct MathOperation{
-    const char *name;       /* Текстовое описание операции */
-    int args_count;         /* Сколько аргументов нужно: 1 или 2 */
-    BinaryFunc bin_op;      /* Функция для 2 аргументов (add, subtract...) */
-    UnaryFunc un_op;        /* Функция для 1 аргумента (sqrt) */
+    const char *name;       //Название операции
+    int args_count;         //Колличество аргументов
+    BinaryFunc bin_op;      //Функция для 2 аргументов (add, subtract...)
+    UnaryFunc un_op;        //Функция для 1 аргумента (sqrt)
 } MathOperation;
 
 #endif /* MATH_OPERATOR_H_ */

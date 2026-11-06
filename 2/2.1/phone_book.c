@@ -1,4 +1,4 @@
-#include "phonebook.h"
+#include "phone_book.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
@@ -16,13 +16,11 @@ static Contact* find_internal(Contact *list, size_t count, int id)
 }
 
 int contact_add(Contact **list, size_t *count, int *next_id,
-                const char *lastName, const char *firstName,
-                const char *format, ...)
+                FullName *person, const char *format, ...)
 {
-    if (!list || !count || !next_id || !lastName || !firstName) return -1;
-    if (lastName[0] == '\0' || firstName[0] == '\0') return -1;
+    if (!list || !count || !next_id) return -1;
+    if (person->lastName[0] == '\0' || person->firstName[0] == '\0') return -1;
 
-    /* Выделение памяти под новый контакт в динамическом массиве */
     size_t new_count = *count + 1;
     Contact *temp = (Contact *)realloc(*list, new_count * sizeof(Contact));
     if (!temp) {
@@ -33,37 +31,26 @@ int contact_add(Contact **list, size_t *count, int *next_id,
     Contact *new_contact = &((*list)[*count]);
     memset(new_contact, 0, sizeof(Contact));
 
-    /* Назначение неизменяемого ID */
     new_contact->id = (*next_id)++;
+    strncpy(new_contact->name.lastName, person->lastName, MAX_NAME_LEN - 1);
+    strncpy(new_contact->name.firstName, person->firstName, MAX_NAME_LEN - 1);
 
-    /* Обязательные поля ФИО */
-    strncpy(new_contact->name.lastName, lastName, MAX_NAME_LEN - 1);
-    strncpy(new_contact->name.firstName, firstName, MAX_NAME_LEN - 1);
-
-    /* 
-     * Разбор необязательных параметров (Лекция 2, слайды 59–60)
-     * Используем цикл for по строке формата и switch по следующему символу
-     */
     if (format != NULL) {
-        va_list factor;             /* Указатель va_list на стек параметров (слайд 56) */
-        va_start(factor, format);   /* Связываем factor с последним именованным параметром (слайд 56) */
+        va_list factor;
+        va_start(factor, format);
 
         for (const char *c = format; *c; c++) {
-            /* Пропускаем все символы, не являющиеся спецификаторами формата (слайд 59) */
-            if (*c != '%') {
-                continue;
-            }
+            if (*c != '%') continue;
 
-            /* Анализируем спецификатор после знака '%' (слайд 60) */
             switch (*++c) {
-                case 'o': { /* Отчество: строка const char* */
-                    const char *patr = va_arg(factor, const char *);
-                    if (patr) {
-                        strncpy(new_contact->name.patronymic, patr, MAX_NAME_LEN - 1);
+                case 's': {
+                    //const char *patr = va_arg(factor, const char *);
+                    if (person->secondName[0] != '\0') {
+                        strncpy(new_contact->name.secondName, person->secondName, MAX_NAME_LEN - 1);
                     }
                     break;
                 }
-                case 'p': { /* Телефон: строка const char* */
+                case 'p': {
                     const char *ph = va_arg(factor, const char *);
                     if (ph && new_contact->phoneCount < MAX_PHONES) {
                         strncpy(new_contact->phones[new_contact->phoneCount], ph, MAX_PHONE_LEN - 1);
@@ -71,7 +58,7 @@ int contact_add(Contact **list, size_t *count, int *next_id,
                     }
                     break;
                 }
-                case 'a': { /* Адрес: указатель на структуру const Address* */
+                case 'a': {
                     const Address *addr = va_arg(factor, const Address *);
                     if (addr && new_contact->addressCount < MAX_ADDRESSES) {
                         new_contact->addresses[new_contact->addressCount] = *addr;
@@ -83,8 +70,7 @@ int contact_add(Contact **list, size_t *count, int *next_id,
                     break;
             }
         }
-
-        va_end(factor); /* Завершаем обработку параметров (слайд 56) */
+        va_end(factor);
     }
 
     *count = new_count;
@@ -93,13 +79,7 @@ int contact_add(Contact **list, size_t *count, int *next_id,
 
 const Contact* contact_find_by_id(const Contact *list, size_t count, int id)
 {
-    if (!list) return NULL;
-    for (size_t i = 0; i < count; i++) {
-        if (list[i].id == id) {
-            return &list[i];
-        }
-    }
-    return NULL;
+    return find_internal((Contact*)list, count, id);
 }
 
 int contact_delete(Contact **list, size_t *count, int id)
@@ -116,6 +96,7 @@ int contact_delete(Contact **list, size_t *count, int id)
 
     if (target_idx == *count) return -1;
 
+    /* Сдвиг элементов влево */
     for (size_t i = target_idx; i < *count - 1; i++) {
         (*list)[i] = (*list)[i + 1];
     }
@@ -135,21 +116,49 @@ int contact_delete(Contact **list, size_t *count, int id)
     return 0;
 }
 
-int contact_update_name(Contact *list, size_t count, int id,
-                        const char *lastName, const char *firstName, const char *patronymic)
+int contact_update_name(Contact *list, size_t count, int id, const char *format, ...)
 {
     Contact *c = find_internal(list, count, id);
     if (!c) return -1;
 
-    if (lastName && lastName[0] != '\0') {
-        strncpy(c->name.lastName, lastName, MAX_NAME_LEN - 1);
+    if (format != NULL) {
+        va_list factor;             
+        va_start(factor, format);   
+        const FullName *newName = va_arg(factor, const FullName*);
+        for (const char *f = format; *f; f++) {//парсинг страны с обозначениями необязательных аргументов
+            
+            if (*f != '%') {//Пропускаем все символы, не являющиеся спецификаторами формата
+                continue;
+            }
+
+            switch (*++f) {
+                case 'l': { // Фамилия
+                    if (newName->lastName[0] != '\0') {
+                        strncpy(c->name.lastName, newName->lastName, MAX_NAME_LEN - 1);
+                    }
+                    break;
+                }
+                case 'f': { // Имя
+                    if (newName->firstName[0] != '\0') {
+                        strncpy(c->name.firstName, newName->firstName, MAX_NAME_LEN - 1);
+                    }
+                    break;
+                }
+                case 's': { // Отчество
+                    if (newName->secondName[0] != '\0') {
+                        strncpy(c->name.secondName, newName->secondName, MAX_NAME_LEN - 1);
+                    }
+                    
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+
+        va_end(factor); // Завершаем обработку параметров 
     }
-    if (firstName && firstName[0] != '\0') {
-        strncpy(c->name.firstName, firstName, MAX_NAME_LEN - 1);
-    }
-    if (patronymic) {
-        strncpy(c->name.patronymic, patronymic, MAX_NAME_LEN - 1);
-    }
+
     return 0;
 }
 
