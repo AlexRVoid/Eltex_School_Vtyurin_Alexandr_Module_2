@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-/* Вспомогательная функция сравнения контактов по алфавиту: Фамилия -> Имя -> Отчество */
+// Вспомогательная функция сравнения контактов по алфавиту: Фамилия -> Имя -> Отчество 
 static int contact_compare(const FullName *a, const FullName *b)
 {
     int cmp = strcmp(a->lastName, b->lastName);
@@ -15,19 +15,19 @@ static int contact_compare(const FullName *a, const FullName *b)
     return strcmp(a->secondName, b->secondName);
 }
 
-/* Вставка узла в двухсвязный список с сохранением порядка  */
+// Вставка узла в двухсвязный список с сохранением порядка  
 static void list_insert_sorted(Contact **head, Contact *new_node)
 {
     new_node->prev = NULL;
     new_node->next = NULL;
 
-    /* Случай 1: Список пуст  */
+    // Случай 1: Список пуст  
     if (*head == NULL) {
         *head = new_node;
         return;
     }
 
-    /* Случай 2: Новый контакт должен стать первым по алфавиту (меньше головы) */
+    // Случай 2: Новый контакт должен стать первым по алфавиту (меньше головы) 
     if (contact_compare(&new_node->name, &(*head)->name) < 0) {
         new_node->next = *head;
         (*head)->prev = new_node;
@@ -35,13 +35,13 @@ static void list_insert_sorted(Contact **head, Contact *new_node)
         return;
     }
 
-    /* Случай 3: Поиск места вставки в середине или конце списка  */
+    // Случай 3: Поиск места вставки в середине или конце списка  
     Contact *curr = *head;
     while (curr->next != NULL && contact_compare(&new_node->name, &curr->next->name) >= 0) {
         curr = curr->next;
     }
 
-    /* Встраивание new_node после curr  */
+    // Встраивание new_node после curr  
     new_node->next = curr->next;
     new_node->prev = curr;
 
@@ -51,13 +51,13 @@ static void list_insert_sorted(Contact **head, Contact *new_node)
     curr->next = new_node;
 }
 
-/* Извлечение узла из связей списка без освобождения памяти  */
+// Извлечение узла из связей списка без освобождения памяти  
 static void list_detach_node(Contact **head, Contact *node)
 {
     if (node->prev != NULL) {
         node->prev->next = node->next;
     } else {
-        *head = node->next; /* Если удаляли голову списка */
+        *head = node->next; // Если удаляли голову списка 
     }
 
     if (node->next != NULL) {
@@ -68,7 +68,7 @@ static void list_detach_node(Contact **head, Contact *node)
     node->next = NULL;
 }
 
-/* Поиск контакта по ID перебором списка  */
+// Поиск контакта по ID перебором списка  
 static Contact* find_internal(Contact *head, int id)
 {
     for (Contact *curr = head; curr != NULL; curr = curr->next) {
@@ -85,7 +85,7 @@ int contact_add(Contact **head, size_t *count, int *next_id,
     if (!head || !count || !next_id || !person) return -1;
     if (person->lastName[0] == '\0' || person->firstName[0] == '\0') return -1;
 
-    /* Выделение памяти под один новый узел списка  */
+    // Выделение памяти под один новый узел списка  
     Contact *new_contact = (Contact *)malloc(sizeof(Contact));
     if (!new_contact) {
         return -1;
@@ -133,7 +133,7 @@ int contact_add(Contact **head, size_t *count, int *next_id,
         va_end(factor);
     }
 
-    /* Вставка нового узла в список с сохранением сортировки по алфавиту */
+    // Вставка нового узла в список с сохранением сортировки по алфавиту 
     list_insert_sorted(head, new_contact);
 
     (*count)++;
@@ -152,10 +152,10 @@ int contact_delete(Contact **head, size_t *count, int id)
     Contact *target = find_internal(*head, id);
     if (!target) return -1;
 
-    /* Исключаем узел из связей списка */
+    // Исключаем узел из связей списка 
     list_detach_node(head, target);
 
-    /* Освобождаем память удаленного узла */
+    // Освобождаем память удаленного узла 
     free(target);
 
     if (count && *count > 0) {
@@ -176,10 +176,10 @@ int contact_update_name(Contact **head, int id, const char *format, ...)
     const FullName *newName = va_arg(factor, const FullName *);
 
     if (newName != NULL) {
-        /* 
+        // 
          * Временно отсоединяем контакт от списка, чтобы изменение фамилии
          * не нарушило инвариант сортировки связей
-         */
+         
         list_detach_node(head, c);
 
         for (const char *f = format; *f; f++) {
@@ -209,7 +209,7 @@ int contact_update_name(Contact **head, int id, const char *format, ...)
             }
         }
 
-        /* Возвращаем узел в список на его новое алфавитное место */
+        // Возвращаем узел в список на его новое алфавитное место 
         list_insert_sorted(head, c);
     }
 
@@ -265,7 +265,7 @@ void contact_free_all(Contact **head, size_t *count)
 {
     if (!head || !(*head)) return;
 
-    /* Поузловое освобождение памяти списка */
+    // Поузловое освобождение памяти списка 
     Contact *curr = *head;
     while (curr != NULL) {
         Contact *next = curr->next;
