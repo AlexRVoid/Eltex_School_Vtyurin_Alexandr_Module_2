@@ -1,51 +1,54 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -pedantic -g -I.
-SANFLAGS = -fsanitize=address,undefined
+AR = ar
+ARFLAGS = rcs
 
-# Основной исполняемый файл и исходники
-TARGET = phonebook
-SRCS = main.c phone_book.c user_interface.c
-OBJS = $(SRCS:.c=.o)
+# Имя статической библиотеки и её модули
+LIB_STATIC = libphonebook.a
+LIB_OBJS = phone_book.o
 
-# Тестовый исполняемый файл и исходники (Unity + ядро)
+# Основной исполняемый файл
+TARGET = phonebook_static
+APP_OBJS = main.o user_interface.o
+
+# Тестовый раннер и его модули
 TEST_TARGET = test_runner
-TEST_SRCS = tests/test_phone_book.c tests/unity/unity.c phone_book.c
+TEST_SRCS = tests/test_phone_book.c tests/unity/unity.c
 TEST_OBJS = $(TEST_SRCS:.c=.o)
 
 .PHONY: all clean fclean re test
 
-# Основная цель
 all: $(TARGET)
 
-# Линковка основного бинарника и автоудаление .o файлов
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
-	@echo "Удаление промежуточных файлов..."
-	rm -f $(OBJS)
+# 1. Сборка статической библиотеки архиватором ar
+$(LIB_STATIC): $(LIB_OBJS)
+	$(AR) $(ARFLAGS) $@ $^
 
-# Линковка тестов с санитайзерами и автоудаление .o файлов тестов
-$(TEST_TARGET): CFLAGS += $(SANFLAGS)
-$(TEST_TARGET): $(TEST_OBJS)
-	$(CC) $(CFLAGS) $(TEST_OBJS) -o $(TEST_TARGET)
+# 2. Сборка основного бинарника с подключением библиотеки
+$(TARGET): $(APP_OBJS) $(LIB_STATIC)
+	$(CC) $(CFLAGS) $(APP_OBJS) -L. -lphonebook -o $@
+	@echo "Удаление промежуточных файлов приложения..."
+	rm -f $(LIB_OBJS) $(APP_OBJS)
+
+# 3. Сборка тестов, слинкованных со статической библиотекой libphonebook.a
+$(TEST_TARGET): $(TEST_OBJS) $(LIB_STATIC)
+	$(CC) $(CFLAGS) $(TEST_OBJS) -L. -lphonebook -o $@
 	@echo "Удаление промежуточных файлов тестов..."
 	rm -f $(TEST_OBJS)
 
-# Сборка и автоматический запуск тестов
+# 4. Запуск тестов
 test: $(TEST_TARGET)
-	@echo "\n>>> ЗАПУСК ТЕСТОВ СТРУКТУРЫ ДАННЫХ <<<"
+	@echo "\n>>> ЗАПУСК ТЕСТОВ СТАТИЧЕСКОЙ БИБЛИОТЕКИ (6.1) <<<"
 	./$(TEST_TARGET)
 
-# Универсальное правило компиляции .c в .o (включая файлы в подпапках tests/)
+# Универсальное правило компиляции .c в .o
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Ручная очистка всех объектных файлов (если сборка прервалась)
 clean:
-	rm -f $(OBJS) $(TEST_OBJS)
+	rm -f $(LIB_OBJS) $(APP_OBJS) $(TEST_OBJS)
 
-# Полная очистка: объектные файлы + оба бинарника
 fclean: clean
-	rm -f $(TARGET) $(TEST_TARGET)
+	rm -f $(LIB_STATIC) $(TARGET) $(TEST_TARGET)
 
-# Полная пересборка с нуля
 re: fclean all

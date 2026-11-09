@@ -1,51 +1,57 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -pedantic -g -I.
-SANFLAGS = -fsanitize=address,undefined
+FPIC = -fPIC
 
-# Основной исполняемый файл и исходники
-TARGET = phonebook
-SRCS = main.c phone_book.c user_interface.c
-OBJS = $(SRCS:.c=.o)
+# Имя динамической библиотеки
+LIB_SHARED = libphonebook.so
+LIB_OBJS = phone_book.o
 
-# Тестовый исполняемый файл и исходники (Unity + ядро)
+# Основной исполняемый файл
+TARGET = phonebook_shared
+APP_OBJS = main.o user_interface.o
+
+# Тестовый раннер и его модули
 TEST_TARGET = test_runner
-TEST_SRCS = tests/test_phone_book.c tests/unity/unity.c phone_book.c
+TEST_SRCS = tests/test_phone_book.c tests/unity/unity.c
 TEST_OBJS = $(TEST_SRCS:.c=.o)
 
 .PHONY: all clean fclean re test
 
-# Основная цель
 all: $(TARGET)
 
-# Линковка основного бинарника и автоудаление .o файлов
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
-	@echo "Удаление промежуточных файлов..."
-	rm -f $(OBJS)
+# 1. Компиляция кода списка с флагом -fPIC
+$(LIB_OBJS): phone_book.c phone_book.h
+	$(CC) $(CFLAGS) $(FPIC) -c $< -o $@
 
-# Линковка тестов с санитайзерами и автоудаление .o файлов тестов
-$(TEST_TARGET): CFLAGS += $(SANFLAGS)
-$(TEST_TARGET): $(TEST_OBJS)
-	$(CC) $(CFLAGS) $(TEST_OBJS) -o $(TEST_TARGET)
+# 2. Создание динамической библиотеки .so
+$(LIB_SHARED): $(LIB_OBJS)
+	$(CC) -shared $(LIB_OBJS) -o $@
+
+# 3. Сборка основного бинарника с привязкой rpath к $ORIGIN
+$(TARGET): $(APP_OBJS) $(LIB_SHARED)
+	$(CC) $(CFLAGS) $(APP_OBJS) -L. -lphonebook -Wl,-rpath,'$$ORIGIN' -o $@
+	@echo "Удаление промежуточных файлов приложения..."
+	rm -f $(LIB_OBJS) $(APP_OBJS)
+
+# 4. Сборка тестов, слинкованных с динамической библиотекой libphonebook.so
+$(TEST_TARGET): $(TEST_OBJS) $(LIB_SHARED)
+	$(CC) $(CFLAGS) $(TEST_OBJS) -L. -lphonebook -Wl,-rpath,'$$ORIGIN' -o $@
 	@echo "Удаление промежуточных файлов тестов..."
 	rm -f $(TEST_OBJS)
 
-# Сборка и автоматический запуск тестов
+# 5. Запуск тестов
 test: $(TEST_TARGET)
-	@echo "\n>>> ЗАПУСК ТЕСТОВ СТРУКТУРЫ ДАННЫХ <<<"
+	@echo "\n>>> ЗАПУСК ТЕСТОВ ДИНАМИЧЕСКОЙ БИБЛИОТЕКИ (6.2) <<<"
 	./$(TEST_TARGET)
 
-# Универсальное правило компиляции .c в .o (включая файлы в подпапках tests/)
+# Универсальное правило компиляции .c в .o
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Ручная очистка всех объектных файлов (если сборка прервалась)
 clean:
-	rm -f $(OBJS) $(TEST_OBJS)
+	rm -f $(LIB_OBJS) $(APP_OBJS) $(TEST_OBJS)
 
-# Полная очистка: объектные файлы + оба бинарника
 fclean: clean
-	rm -f $(TARGET) $(TEST_TARGET)
+	rm -f $(LIB_SHARED) $(TARGET) $(TEST_TARGET)
 
-# Полная пересборка с нуля
 re: fclean all
