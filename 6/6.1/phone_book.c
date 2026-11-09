@@ -15,7 +15,7 @@ static int contact_compare(const FullName *a, const FullName *b)
     return strcmp(a->secondName, b->secondName);
 }
 
-// Вставка узла в двухсвязный список с сохранением порядка 
+// Вставка узла в двухсвязный список с сохранением порядка
 static void list_insert_sorted(Contact **head, Contact *new_node)
 {
     new_node->prev = NULL;
@@ -35,15 +35,15 @@ static void list_insert_sorted(Contact **head, Contact *new_node)
         return;
     }
 
-    // Случай 3: Поиск места вставки в середине или конце списка 
+    // Случай 3: Поиск места вставки в середине или конце списка  
     Contact *curr = *head;
-    while (curr->next != NULL && contact_compare(&new_node->name, &curr->next->name) >= 0) {
+    while (curr->next != NULL && contact_compare(&new_node->name, &curr->next->name) >= 0) {//Проход по списку
         curr = curr->next;
     }
 
     // Встраивание new_node после curr
-    new_node->next = curr->next;
-    new_node->prev = curr;
+    new_node->next = curr->next;//указатель на следующий элемент
+    new_node->prev = curr;//указатель на предыдуший элемент
 
     if (curr->next != NULL) {
         curr->next->prev = new_node;
@@ -85,7 +85,7 @@ int contact_add(Contact **head, size_t *count, int *next_id,
     if (!head || !count || !next_id || !person) return -1;
     if (person->lastName[0] == '\0' || person->firstName[0] == '\0') return -1;
 
-    // Выделение памяти под один новый узел списка  
+    // Выделение памяти под один новый узел списка 
     Contact *new_contact = (Contact *)malloc(sizeof(Contact));
     if (!new_contact) {
         return -1;
@@ -152,10 +152,10 @@ int contact_delete(Contact **head, size_t *count, int id)
     Contact *target = find_internal(*head, id);
     if (!target) return -1;
 
-    // Исключаем узел из связей списка  
+    // Исключаем узел из связей списка 
     list_detach_node(head, target);
 
-    // Освобождаем память удаленного узла  
+    // Освобождаем память удаленного узла 
     free(target);
 
     if (count && *count > 0) {
@@ -176,10 +176,8 @@ int contact_update_name(Contact **head, int id, const char *format, ...)
     const FullName *newName = va_arg(factor, const FullName *);
 
     if (newName != NULL) {
-        // 
-         * Временно отсоединяем контакт от списка, чтобы изменение фамилии
-         * не нарушило инвариант сортировки связей
-         
+        //Временно отсоединяем контакт от списка, чтобы изменение фамилиине нарушило инвариант сортировки связей
+        
         list_detach_node(head, c);
 
         for (const char *f = format; *f; f++) {

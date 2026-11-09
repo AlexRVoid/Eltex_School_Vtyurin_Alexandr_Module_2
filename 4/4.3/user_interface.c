@@ -387,6 +387,7 @@ void run_phonebook_ui(void)
             case 9:
                 contact_load_presets(&root, &count, &next_id);
                 printf("\nЗагружено 8 тестовых контактов!\n");
+                handle_auto_balance_notify(&root, count);
                 break;
             default:
                 printf("Неверный пункт меню!\n");

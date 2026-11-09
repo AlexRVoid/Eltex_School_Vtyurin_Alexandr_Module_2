@@ -1,41 +1,51 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -pedantic -g
-FPIC = -fPIC
+CFLAGS = -Wall -Wextra -std=c99 -pedantic -g -I.
+SANFLAGS = -fsanitize=address,undefined
 
-# Имя динамической библиотеки
-LIB_SHARED = libphonebook.so
-LIB_OBJS = phone_book.o
+# Основной исполняемый файл и исходники
+TARGET = phonebook
+SRCS = main.c phone_book.c user_interface.c
+OBJS = $(SRCS:.c=.o)
 
-# Исполняемый файл
-TARGET = phonebook_shared
-APP_OBJS = main.o user_interface.o
+# Тестовый исполняемый файл и исходники (Unity + ядро)
+TEST_TARGET = test_runner
+TEST_SRCS = tests/test_phone_book.c tests/unity/unity.c phone_book.c
+TEST_OBJS = $(TEST_SRCS:.c=.o)
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re test
 
+# Основная цель
 all: $(TARGET)
 
-# 1. Компиляция кода списка с обязательным флагом -fPIC
-$(LIB_OBJS): phone_book.c phone_book.h
-	$(CC) $(CFLAGS) $(FPIC) -c $< -o $@
+# Линковка основного бинарника и автоудаление .o файлов
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
+	@echo "Удаление промежуточных файлов..."
+	rm -f $(OBJS)
 
-# 2. Создание динамической библиотеки .so флажком -shared
-$(LIB_SHARED): $(LIB_OBJS)
-	$(CC) -shared $(LIB_OBJS) -o $@
+# Линковка тестов с санитайзерами и автоудаление .o файлов тестов
+$(TEST_TARGET): CFLAGS += $(SANFLAGS)
+$(TEST_TARGET): $(TEST_OBJS)
+	$(CC) $(CFLAGS) $(TEST_OBJS) -o $(TEST_TARGET)
+	@echo "Удаление промежуточных файлов тестов..."
+	rm -f $(TEST_OBJS)
 
-# 3. Компиляция модулей UI и main
+# Сборка и автоматический запуск тестов
+test: $(TEST_TARGET)
+	@echo "\n>>> ЗАПУСК ТЕСТОВ СТРУКТУРЫ ДАННЫХ <<<"
+	./$(TEST_TARGET)
+
+# Универсальное правило компиляции .c в .o (включая файлы в подпапках tests/)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# 4. Линковка бинарника с библиотекой и жесткой привязкой пути через $ORIGIN
-$(TARGET): $(APP_OBJS) $(LIB_SHARED)
-	$(CC) $(APP_OBJS) -L. -lphonebook -Wl,-rpath,'$$ORIGIN' -o $@
-	@echo "Удаление промежуточных объектных файлов..."
-	rm -f $(LIB_OBJS) $(APP_OBJS)
-
+# Ручная очистка всех объектных файлов (если сборка прервалась)
 clean:
-	rm -f $(LIB_OBJS) $(APP_OBJS)
+	rm -f $(OBJS) $(TEST_OBJS)
 
+# Полная очистка: объектные файлы + оба бинарника
 fclean: clean
-	rm -f $(LIB_SHARED) $(TARGET)
+	rm -f $(TARGET) $(TEST_TARGET)
 
+# Полная пересборка с нуля
 re: fclean all

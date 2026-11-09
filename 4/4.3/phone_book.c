@@ -445,6 +445,7 @@ void contact_load_presets(Contact **root, size_t *count, int *next_id)
     for (int i = 0; i < 8; i++) {
         contact_add(root, count, next_id, &presets[i], NULL);
     }
+    g_mod_counter = 8;//Изменение значения счётчика изменений
 }
 
 void contact_free_all(Contact **root, size_t *count)
@@ -457,5 +458,8 @@ void contact_free_all(Contact **root, size_t *count)
     free(*root);
     *root = NULL;
 
-    if (count) *count = 0;
+    if (count) {
+        *count = 0;
+        g_mod_counter = 0; /* Сброс счётчика изменений для изоляции тестов */
+    }
 }

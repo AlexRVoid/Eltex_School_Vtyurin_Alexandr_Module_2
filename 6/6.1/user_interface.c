@@ -309,7 +309,7 @@ static void ui_edit(Contact **head)
 
 void run_phonebook_ui(void)
 {
-    Contact *head = NULL; // Голова двухсвязного списка  
+    Contact *head = NULL; // Голова двухсвязного списка 
     size_t count = 0;
     int next_id = 1;
 

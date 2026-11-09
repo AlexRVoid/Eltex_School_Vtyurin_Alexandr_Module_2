@@ -37,13 +37,13 @@ static void list_insert_sorted(Contact **head, Contact *new_node)
 
     // Случай 3: Поиск места вставки в середине или конце списка  
     Contact *curr = *head;
-    while (curr->next != NULL && contact_compare(&new_node->name, &curr->next->name) >= 0) {
+    while (curr->next != NULL && contact_compare(&new_node->name, &curr->next->name) >= 0) {//Проход по списку
         curr = curr->next;
     }
 
-    // Встраивание new_node после curr ( 
-    new_node->next = curr->next;
-    new_node->prev = curr;
+    // Встраивание new_node после curr
+    new_node->next = curr->next;//указатель на следующий элемент
+    new_node->prev = curr;//указатель на предыдуший элемент
 
     if (curr->next != NULL) {
         curr->next->prev = new_node;
