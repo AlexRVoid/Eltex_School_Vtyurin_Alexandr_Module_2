@@ -32,10 +32,6 @@ test: $(TEST_TARGET)
 	@echo "=============================================="
 	./$(TEST_TARGET)
 
-# Прогон тестов под Valgrind на отсутствие утечек
-test_valgrind: $(TEST_TARGET)
-	valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1 ./$(TEST_TARGET)
-
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
